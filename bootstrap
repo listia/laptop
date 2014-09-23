@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$(uname)" == "Darwin" ]; then
+  bash ./mac
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  bash ./linux
+fi
+

@@ -1,0 +1,5 @@
+fancy_echo "Installing rbenv, to change Ruby versions ..."
+  brew_install_or_upgrade 'rv,'
+
+fancy_echo "Installing ruby-build, to install Rubies ..."
+  brew_install_or_upgrade 'ruby-build'
