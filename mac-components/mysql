@@ -1,3 +1,7 @@
-fancy_echo "Installing MySQL 5.5.33 ..."
-  brew_install_or_update https://gist.githubusercontent.com/ngan/f1e3268855262514a607/raw/beb171d376303d5e3397adca500d30834bab8b7a/mysql.rb
+fancy_echo "Installing MySQL 5.5.30 ..."
+  if [ "$(brew tap | grep versions)" == "" ]; then
+    brew tap homebrew/versions
+  fi
 
+  brew install mysql55
+  brew link --force mysql55

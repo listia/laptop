@@ -1,0 +1,8 @@
+fancy_echo "Installing Sphinx..."
+  if [ "$(brew tap | grep versions)" == "" ]; then
+    brew tap homebrew/dupes
+  fi
+
+  brew_install_or_upgrade apple-gcc42
+  brew_install_or_upgrade https://gist.githubusercontent.com/ngan/3186262/raw/4515131e51b2af16cbfd8d77ba56c3511d009403/sphinx.rb --mysql
+

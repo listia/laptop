@@ -8,6 +8,16 @@ brew_install_or_upgrade() {
   fi
 }
 
+cask_install_or_update() {
+  if brew_is_installed "$1"; then
+    if brew_is_upgradable "$1"; then
+      brew upgrade "$@"
+    fi
+  else
+    brew install "$@"
+  fi
+}
+
 brew_is_installed() {
   local NAME=$(brew_expand_alias "$1")
 

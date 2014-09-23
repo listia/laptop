@@ -32,11 +32,17 @@ fancy_echo() {
 }
 ### end common-components/shared-functions
 
-fancy_echo "Changing your shell to zsh ..."
-  chsh -s $(which zsh)
-### end common-components/zsh
-
 brew_install_or_upgrade() {
+  if brew_is_installed "$1"; then
+    if brew_is_upgradable "$1"; then
+      brew upgrade "$@"
+    fi
+  else
+    brew install "$@"
+  fi
+}
+
+cask_install_or_update() {
   if brew_is_installed "$1"; then
     if brew_is_upgradable "$1"; then
       brew upgrade "$@"
@@ -78,11 +84,28 @@ brew_launchctl_restart() {
 }
 ### end mac-components/mac-functions
 
-if [[ -f /etc/zshenv ]]; then
-  fancy_echo "Fixing OSX zsh environment bug ..."
-    sudo mv /etc/{zshenv,zshrc}
-fi
-### end mac-components/zsh-fix
+fancy_echo "Generating SSH KEY"
+  if [ ! -f ~/.ssh/id_rsa ]; then
+    ssh-keygen -t rsa -b 4096
+  else
+    fancy_echo "A SSH key pair is exsited. Will not generate."
+  fi
+
+fancy_echo "Enter your github username/password. Your sshkey will be imported automatically"
+  confirm=""
+  while [ ! "$confirm" == "Y" ]
+  do
+    read -p "Username: " username
+    echo "You username is: $username."
+    read -p "Is this correct? (Y|n)?" confirm
+  done
+
+  read -s -p "Password: " password
+  echo "Your username password is $username $password"
+  
+  # Check 2-factor login
+  
+### end mac-components/github
 
 if ! command -v brew >/dev/null; then
   fancy_echo "Installing Homebrew, a good OS X package manager ..."
@@ -99,136 +122,89 @@ else
 fi
 
 fancy_echo "Updating Homebrew formulas ..."
-brew update
+  # brew update
 ### end mac-components/homebrew
 
-fancy_echo "Installing Postgres, a good open source relational database ..."
-  brew_install_or_upgrade 'postgres' '--no-python'
-
-fancy_echo "Installing Redis, a good key-value database ..."
-  brew_install_or_upgrade 'redis'
-
-fancy_echo "Installing The Silver Searcher (better than ack or grep) to search the contents of files ..."
-  brew_install_or_upgrade 'the_silver_searcher'
-
-fancy_echo "Installing vim from Homebrew to get the latest version ..."
-  brew_install_or_upgrade 'vim'
-
-fancy_echo "Installing ctags, to index files for vim tab completion of methods, classes, variables ..."
-  brew_install_or_upgrade 'ctags'
-
-fancy_echo "Installing tmux, to save project state and switch between projects ..."
-  brew_install_or_upgrade 'tmux'
-
-fancy_echo "Installing reattach-to-user-namespace, for copy-paste and RubyMotion compatibility with tmux ..."
-  brew_install_or_upgrade 'reattach-to-user-namespace'
-
-fancy_echo "Installing ImageMagick, to crop and resize images ..."
-  brew_install_or_upgrade 'imagemagick'
-
-fancy_echo "Installing QT, used by Capybara Webkit for headless Javascript integration testing ..."
-  brew_install_or_upgrade 'qt'
+fancy_echo "Installing Cask ..."
+  brew tap caskroom/cask
+  brew_install_or_upgrade caskroom/cask/brew-cask
+  # brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup
+### end mac-components/cask
 
 fancy_echo "Installing watch, to execute a program periodically and show the output ..."
   brew_install_or_upgrade 'watch'
 
-fancy_echo "Installing GitHub CLI client ..."
-  brew_install_or_upgrade 'gh'
-
-node_version="0.10"
-
-fancy_echo "Installing NVM, Node.js, and NPM, for running apps and installing JavaScript packages ..."
-  brew_install_or_upgrade 'nvm'
-
-  if ! grep -qs 'source $(brew --prefix nvm)/nvm.sh' ~/.zshrc; then
-    printf 'export PATH="$PATH:/usr/local/lib/node_modules"\n' >> ~/.zshrc
-    printf 'source $(brew --prefix nvm)/nvm.sh\n' >> ~/.zshrc
-  fi
-
-  source $(brew --prefix nvm)/nvm.sh
-  nvm install "$node_version"
-
-  fancy_echo "Setting $node_version as the global default nodejs..."
-  nvm alias default "$node_version"
 ### end mac-components/packages
 
-fancy_echo "Starting Postgres ..."
-  brew_launchctl_restart postgresql
-### end mac-components/start-services
+fancy_echo "Installing ImageMagick, to crop and resize images ..."
+  brew_install_or_upgrade 'imagemagick'
 
-fancy_echo "Installing rbenv, to change Ruby versions ..."
-  brew_install_or_upgrade 'rbenv'
 
-  if ! grep -qs "rbenv init" ~/.zshrc; then
-    printf 'export PATH="$HOME/.rbenv/bin:$PATH"\n' >> ~/.zshrc
-    printf 'eval "$(rbenv init - zsh --no-rehash)"\n' >> ~/.zshrc
+### end mac-components/imagemagick
 
-    fancy_echo "Enable shims and autocompletion ..."
-      eval "$(rbenv init - zsh)"
+fancy_echo "Installing rvm, to change Ruby versions ..."
+  if [ "rvm not found" == "$(which rvm)" ]; then
+    curl -L https://get.rvm.io | bash -s stable
+    source ~/.rvm/scripts/rvm
+  else
+    echo "Found an rvm"
   fi
 
-  export PATH="$HOME/.rbenv/bin:$PATH"
-
-fancy_echo "Installing rbenv-gem-rehash so the shell automatically picks up binaries after installing gems with binaries..."
-  brew_install_or_upgrade 'rbenv-gem-rehash'
-
-fancy_echo "Installing ruby-build, to install Rubies ..."
-  brew_install_or_upgrade 'ruby-build'
-### end mac-components/rbenv
+### end mac-components/rvm
 
 fancy_echo "Upgrading and linking OpenSSL ..."
   brew_install_or_upgrade 'openssl'
   brew unlink openssl && brew link openssl --force
 ### end mac-components/compiler-and-libraries
 
-ruby_version="$(curl -sSL http://ruby.thoughtbot.com/latest)"
+ruby_version="ruby-1.9.3-p327"
 
 fancy_echo "Installing Ruby $ruby_version ..."
-  rbenv install -s "$ruby_version"
+  rvm install "$ruby_version" --disable-binary --patch railsexpress
 
-fancy_echo "Setting $ruby_version as global default Ruby ..."
-  rbenv global "$ruby_version"
-  rbenv rehash
+#fancy_echo "Setting $ruby_version as global default Ruby ..."
+#  rvm "$ruby_version@listia"
 
-fancy_echo "Updating to latest Rubygems version ..."
-  gem update --system
+
+### end common-components/ruby-environment
 
 fancy_echo "Installing Bundler to install project-specific Ruby gems ..."
   gem install bundler --no-document --pre
-### end common-components/ruby-environment
 
 fancy_echo "Configuring Bundler for faster, parallel gem installation ..."
   number_of_cores=$(sysctl -n hw.ncpu)
   bundle config --global jobs $((number_of_cores - 1))
+
+
 ### end mac-components/bundler
 
-fancy_echo "Installing Suspenders, thoughtbot's Rails template ..."
-  gem install suspenders --no-document
+fancy_echo "Installing anvil..."
+  brew cask install anvil
+### end mac-components/anvil
 
-fancy_echo "Installing Parity, shell commands for development, staging, and
-production parity ..."
-  gem install parity --no-document
-### end common-components/default-gems
+fancy_echo "Installing MySQL 5.5.30 ..."
+  if [ "$(brew tap | grep versions)" == "" ]; then
+    brew tap homebrew/versions
+  fi
 
-fancy_echo "Installing Heroku CLI client ..."
-  brew_install_or_upgrade 'heroku-toolbelt'
+  brew install mysql55
+  brew link --force mysql55
+### end mac-components/mysql
 
-fancy_echo "Installing the heroku-config plugin to pull config variables locally to be used as ENV variables ..."
-  heroku plugins:install git://github.com/ddollar/heroku-config.git
+fancy_echo "Installing Sphinx..."
+  if [ "$(brew tap | grep versions)" == "" ]; then
+    brew tap homebrew/dupes
+  fi
 
-fancy_echo "Installing foreman ..."
-  curl -sLo /tmp/foreman.pkg http://assets.foreman.io/foreman/foreman.pkg && \
-  sudo installer -pkg /tmp/foreman.pkg -tgt /
-### end mac-components/heroku
+  brew_install_or_upgrade apple-gcc42
+  brew_install_or_upgrade https://gist.githubusercontent.com/ngan/3186262/raw/4515131e51b2af16cbfd8d77ba56c3511d009403/sphinx.rb --mysql
 
-if ! command -v rcup >/dev/null; then
-  fancy_echo "Installing rcm, to manage your dotfiles ..."
-    brew tap thoughtbot/formulae
-    brew_install_or_upgrade 'rcm'
-else
-  fancy_echo "rcm already installed. Skipping ..."
-fi
-### end mac-components/rcm
+### end mac-components/sphinx
+
+fancy_echo "Starting MySQL ..."
+  brew_launchctl_restart mysql
+
+### end mac-components/start-services
 
 fancy_echo "Installing your personal additions from ~/.laptop.local ..."
   if [[ -f ~/.laptop.local ]]; then

@@ -1,5 +1,8 @@
-fancy_echo "Installing rbenv, to change Ruby versions ..."
-  brew_install_or_upgrade 'rv,'
+fancy_echo "Installing rvm, to change Ruby versions ..."
+  if [ "rvm not found" == "$(which rvm)" ]; then
+    curl -L https://get.rvm.io | bash -s stable
+    source ~/.rvm/scripts/rvm
+  else
+    echo "Found an rvm"
+  fi
 
-fancy_echo "Installing ruby-build, to install Rubies ..."
-  brew_install_or_upgrade 'ruby-build'
