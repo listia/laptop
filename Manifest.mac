@@ -6,7 +6,6 @@ common-components/shared-functions
 mac-components/mac-functions
 mac-components/github
 mac-components/homebrew
-mac-components/cask
 mac-components/packages
 mac-components/imagemagick
 mac-components/rvm

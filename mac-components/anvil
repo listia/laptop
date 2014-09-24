@@ -1,2 +1,5 @@
 fancy_echo "Installing anvil..."
-  brew cask install anvil
+  wget http://sparkler.herokuapp.com/apps/3/download -O /tmp/Anvil.app.zip
+  if [ "$(md5 -r /tmp/Anvil.app.zip)" == "d41d8cd98f00b204e9800998ecf8427e" ]; then
+    sudo unzip /tmp/Anvil.app.zip -d /Applications/
+  fi
