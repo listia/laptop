@@ -1,7 +1,7 @@
 fancy_echo "Installing Cask ..."
   if [ "$(brew tap | grep cask)" == "" ]; then
     brew tap caskroom/cask
-  end
+  fi
 
   brew_install_or_upgrade caskroom/cask/brew-cask
   # brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup

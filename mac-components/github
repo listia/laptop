@@ -1,0 +1,56 @@
+github_add_key() {
+  result=$(curl -H "Authorization: token $1" -d "{\"title\":\"Listia\",\"key\":\"$2\"}" https://api.github.com/user/keys > /dev/null 2>&1)
+}
+
+fancy_echo "Generating SSH KEY"
+  if [ ! -f ~/.ssh/id_rsa ]; then
+    ssh-keygen -t rsa -b 4096
+  else
+    fancy_echo "A SSH key pair is exsited. Will not generate."
+  fi
+
+read -p "Auto import your SSH key to Github? (Y/n) " autoimport
+if [ "$autoimport" == "Y" ]; then
+  fancy_echo "Enter your github username/password. Your SSH public key will be imported automatically"
+
+    valid_password=""
+    while [ "$valid_password" == "" ]
+    do
+      confirm=""
+      while [ ! "$confirm" == "Y" ]
+      do
+        read -p "Username: " username
+        echo "Your username is: $username."
+        read -p "Is this correct? (Y/n) " confirm
+      done
+
+      read -s -p "Password: " password
+      printf "\n"
+
+      # Check 2-factor login, get the otp token if needed, then send other request to grab the token
+      perm="{\"note\":\"Listia Laptop: $(date)\",\"scopes\":[\"read:public_key\", \"write:public_key\"]}"
+      
+      basicauth="$username:$password"
+      authorization=$(curl -d "$perm" -u "$basicauth" https://api.github.com/authorizations 2>/dev/null)
+      if [ "$(echo $authorization | grep 'Must specify two-factor authentication')" == "" ]; then
+        echo "Wrong password"
+      else
+        valid_password=1
+        valid_otptoken=""
+        while [ "$valid_otptoken" == "" ]
+        do
+          read -p "Enter your 2-factor token: " otptoken
+          authorization=$(curl -H "X-GitHub-OTP: $otptoken" -d "$perm" -u "$basicauth" https://api.github.com/authorizations 2>/dev/null)
+          
+          token=$(echo "$authorization" | grep "token" | awk '{print $2}' | sed "s/[^a-zA-Z0-9]//g")
+          if [ "$token" == "" ]; then
+            echo "Wrong OTP token. Please check your SMS."
+          else
+            valid_otptoken=1
+            github_add_key "$token" "$(cat ~/.ssh/id_rsa.pub)"
+          fi
+        done
+
+      fi
+    done
+fi

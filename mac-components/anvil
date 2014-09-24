@@ -1,5 +1,11 @@
-fancy_echo "Installing anvil..."
-  wget http://sparkler.herokuapp.com/apps/3/download -O /tmp/Anvil.app.zip
-  if [ "$(md5 -r /tmp/Anvil.app.zip)" == "d41d8cd98f00b204e9800998ecf8427e" ]; then
-    sudo unzip /tmp/Anvil.app.zip -d /Applications/
-  fi
+fancy_echo "Installing Anvil..."
+  #if [ ! -d "/Applications/Anvil.app" ]; then
+    wget http://sparkler.herokuapp.com/apps/3/download -O /tmp/Anvil.app.zip
+    echo $(md5 -r /tmp/Anvil.app.zip)
+
+    #if [ "$(md5 -r /tmp/Anvil.app.zip)" == "d41d8cd98f00b204e9800998ecf8427e" ]; then
+      echo "Enter your password to install Anvil into /Applications "
+      sudo unzip -fo /tmp/Anvil.app.zip -d /Applications/
+      #rm -f /tmp/Anvil.app.zip
+    #fi
+  #fi

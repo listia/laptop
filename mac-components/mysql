@@ -3,5 +3,5 @@ fancy_echo "Installing MySQL 5.5.30 ..."
     brew tap homebrew/versions
   fi
 
-  brew install mysql55
+  brew_install_or_upgrade mysql55
   brew link --force mysql55

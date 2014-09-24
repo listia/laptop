@@ -42,16 +42,6 @@ brew_install_or_upgrade() {
   fi
 }
 
-cask_install_or_update() {
-  if brew_is_installed "$1"; then
-    if brew_is_upgradable "$1"; then
-      brew upgrade "$@"
-    fi
-  else
-    brew install "$@"
-  fi
-}
-
 brew_is_installed() {
   local NAME=$(brew_expand_alias "$1")
 
@@ -84,6 +74,10 @@ brew_launchctl_restart() {
 }
 ### end mac-components/mac-functions
 
+github_add_key() {
+  result=$(curl -H "Authorization: token $1" -d "{\"title\":\"Listia\",\"key\":\"$2\"}" https://api.github.com/user/keys > /dev/null 2>&1)
+}
+
 fancy_echo "Generating SSH KEY"
   if [ ! -f ~/.ssh/id_rsa ]; then
     ssh-keygen -t rsa -b 4096
@@ -91,20 +85,51 @@ fancy_echo "Generating SSH KEY"
     fancy_echo "A SSH key pair is exsited. Will not generate."
   fi
 
-fancy_echo "Enter your github username/password. Your sshkey will be imported automatically"
-  confirm=""
-  while [ ! "$confirm" == "Y" ]
-  do
-    read -p "Username: " username
-    echo "You username is: $username."
-    read -p "Is this correct? (Y|n)?" confirm
-  done
+read -p "Auto import your SSH key to Github? (Y/n) " autoimport
+if [ "$autoimport" == "Y" ]; then
+  fancy_echo "Enter your github username/password. Your SSH public key will be imported automatically"
 
-  read -s -p "Password: " password
-  echo "Your username password is $username $password"
-  
-  # Check 2-factor login
-  
+    valid_password=""
+    while [ "$valid_password" == "" ]
+    do
+      confirm=""
+      while [ ! "$confirm" == "Y" ]
+      do
+        read -p "Username: " username
+        echo "Your username is: $username."
+        read -p "Is this correct? (Y/n) " confirm
+      done
+
+      read -s -p "Password: " password
+      printf "\n"
+
+      # Check 2-factor login, get the otp token if needed, then send other request to grab the token
+      perm="{\"note\":\"Listia Laptop: $(date)\",\"scopes\":[\"read:public_key\", \"write:public_key\"]}"
+      
+      basicauth="$username:$password"
+      authorization=$(curl -d "$perm" -u "$basicauth" https://api.github.com/authorizations 2>/dev/null)
+      if [ "$(echo $authorization | grep 'Must specify two-factor authentication')" == "" ]; then
+        echo "Wrong password"
+      else
+        valid_password=1
+        valid_otptoken=""
+        while [ "$valid_otptoken" == "" ]
+        do
+          read -p "Enter your 2-factor token: " otptoken
+          authorization=$(curl -H "X-GitHub-OTP: $otptoken" -d "$perm" -u "$basicauth" https://api.github.com/authorizations 2>/dev/null)
+          
+          token=$(echo "$authorization" | grep "token" | awk '{print $2}' | sed "s/[^a-zA-Z0-9]//g")
+          if [ "$token" == "" ]; then
+            echo "Wrong OTP token. Please check your SMS."
+          else
+            valid_otptoken=1
+            github_add_key "$token" "$(cat ~/.ssh/id_rsa.pub)"
+          fi
+        done
+
+      fi
+    done
+fi
 ### end mac-components/github
 
 if ! command -v brew >/dev/null; then
@@ -124,12 +149,6 @@ fi
 fancy_echo "Updating Homebrew formulas ..."
   # brew update
 ### end mac-components/homebrew
-
-fancy_echo "Installing Cask ..."
-  brew tap caskroom/cask
-  brew_install_or_upgrade caskroom/cask/brew-cask
-  # brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup
-### end mac-components/cask
 
 fancy_echo "Installing watch, to execute a program periodically and show the output ..."
   brew_install_or_upgrade 'watch'
@@ -178,8 +197,17 @@ fancy_echo "Configuring Bundler for faster, parallel gem installation ..."
 
 ### end mac-components/bundler
 
-fancy_echo "Installing anvil..."
-  brew cask install anvil
+fancy_echo "Installing Anvil..."
+  #if [ ! -d "/Applications/Anvil.app" ]; then
+    wget http://sparkler.herokuapp.com/apps/3/download -O /tmp/Anvil.app.zip
+    echo $(md5 -r /tmp/Anvil.app.zip)
+
+    #if [ "$(md5 -r /tmp/Anvil.app.zip)" == "d41d8cd98f00b204e9800998ecf8427e" ]; then
+      echo "Enter your password to install Anvil into /Applications "
+      sudo unzip /tmp/Anvil.app.zip -d /Applications/
+      #rm -f /tmp/Anvil.app.zip
+    #fi
+  #fi
 ### end mac-components/anvil
 
 fancy_echo "Installing MySQL 5.5.30 ..."
@@ -187,7 +215,7 @@ fancy_echo "Installing MySQL 5.5.30 ..."
     brew tap homebrew/versions
   fi
 
-  brew install mysql55
+  brew_install_or_upgrade mysql55
   brew link --force mysql55
 ### end mac-components/mysql
 
@@ -197,12 +225,14 @@ fancy_echo "Installing Sphinx..."
   fi
 
   brew_install_or_upgrade apple-gcc42
-  brew_install_or_upgrade https://gist.githubusercontent.com/ngan/3186262/raw/4515131e51b2af16cbfd8d77ba56c3511d009403/sphinx.rb --mysql
+  if brew_is_installed "Sphinx"; then
+    brew install https://gist.githubusercontent.com/ngan/3186262/raw/4515131e51b2af16cbfd8d77ba56c3511d009403/sphinx.rb --mysql
+  fi
 
 ### end mac-components/sphinx
 
 fancy_echo "Starting MySQL ..."
-  brew_launchctl_restart mysql
+  brew_launchctl_restart mysql55
 
 ### end mac-components/start-services
 
