@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ "$(uname)" == "Darwin" ]; then
-  bash ./mac
+  bash <(curl -s https://raw.githubusercontent.com/listia/laptop/master/mac) 2>&1
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  bash ./linux
+  bash <(curl -s https://raw.githubusercontent.com/listia/laptop/master/linux) 2>&1
 fi
 
