@@ -74,6 +74,14 @@ brew_launchctl_restart() {
 }
 ### end mac-components/mac-functions
 
+fancy_echo "Checking Filevault status..."
+  if [ "$(sudo fdesetup status)" == "FileVault is Off." ]; then
+    fancy_echo "Please turn on Filevault. https://github.com/listia/listia/wiki/Computer-Security"
+    exit
+  fi
+
+### end mac-components/filevault
+
 github_add_key() {
   result=$(curl -H "Authorization: token $1" -d "{\"title\":\"Listia\",\"key\":\"$2\"}" https://api.github.com/user/keys > /dev/null 2>&1)
 }
@@ -198,16 +206,16 @@ fancy_echo "Configuring Bundler for faster, parallel gem installation ..."
 ### end mac-components/bundler
 
 fancy_echo "Installing Anvil..."
-  #if [ ! -d "/Applications/Anvil.app" ]; then
+  if [ ! -d "/Applications/Anvil.app" ]; then
     wget http://sparkler.herokuapp.com/apps/3/download -O /tmp/Anvil.app.zip
     echo $(md5 -r /tmp/Anvil.app.zip)
 
     #if [ "$(md5 -r /tmp/Anvil.app.zip)" == "d41d8cd98f00b204e9800998ecf8427e" ]; then
       echo "Enter your password to install Anvil into /Applications "
-      sudo unzip /tmp/Anvil.app.zip -d /Applications/
+      sudo unzip -fo /tmp/Anvil.app.zip -d /Applications/
       #rm -f /tmp/Anvil.app.zip
     #fi
-  #fi
+  fi
 ### end mac-components/anvil
 
 fancy_echo "Installing MySQL 5.5.30 ..."
