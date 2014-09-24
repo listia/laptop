@@ -1,0 +1,6 @@
+fancy_echo "Checking Filevault status..."
+  if [ "$(sudo fdesetup status)" == "FileVault is Off." ]; then
+    fancy_echo "Please turn on Filevault. https://github.com/listia/listia/wiki/Computer-Security"
+    exit
+  fi
+
