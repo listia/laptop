@@ -1,5 +1,5 @@
 fancy_echo "Installing Anvil..."
-  #if [ ! -d "/Applications/Anvil.app" ]; then
+  if [ ! -d "/Applications/Anvil.app" ]; then
     wget http://sparkler.herokuapp.com/apps/3/download -O /tmp/Anvil.app.zip
     echo $(md5 -r /tmp/Anvil.app.zip)
 
@@ -8,4 +8,4 @@ fancy_echo "Installing Anvil..."
       sudo unzip -fo /tmp/Anvil.app.zip -d /Applications/
       #rm -f /tmp/Anvil.app.zip
     #fi
-  #fi
+  fi
