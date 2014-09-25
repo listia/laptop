@@ -9,7 +9,6 @@ mac-components/filevault
 mac-components/github
 mac-components/homebrew
 mac-components/packages
-mac-components/nginx
 mac-components/imagemagick
 mac-components/rvm
 mac-components/compiler-and-libraries
@@ -18,5 +17,6 @@ mac-components/bundler
 mac-components/anvil
 mac-components/mysql
 mac-components/sphinx
+mac-components/nginx
 mac-components/start-services
 common-components/personal-additions
