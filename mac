@@ -34,9 +34,10 @@ fancy_echo() {
 
 brew_install_or_upgrade() {
   if brew_is_installed "$1"; then
-    if brew_is_upgradable "$1"; then
-      echo "$1 is installed. Ignore..."
-    fi
+    #if brew_is_upgradable "$1"; then
+      #echo "$1 is installed. Ignore..."
+    #fi
+    echo "$1 is installed. Ignore..."
   else
     brew install "$@"
   fi
@@ -238,7 +239,11 @@ fancy_echo "Upgrading and linking OpenSSL ..."
 ruby_version="ruby-1.9.3-p327"
 
 fancy_echo "Installing Ruby $ruby_version ..."
-  rvm install "$ruby_version" --disable-binary --patch railsexpress
+  if [ -n "$(rvm list | grep "$ruby_version")" ]; then
+    echo "Ruby $ruby_version is installed. Ignore..."
+  else
+    rvm install "$ruby_version" --disable-binary --patch railsexpress
+  fi
 
 #fancy_echo "Setting $ruby_version as global default Ruby ..."
 #  rvm "$ruby_version@listia"
