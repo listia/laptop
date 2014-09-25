@@ -111,7 +111,7 @@ case $key in
 esac
 done
 
-REPOMAIN="https://raw.githubusercontent.com/listia/laptop/nginx_ssl_support/"
+REPOMAIN="https://raw.githubusercontent.com/listia/laptop/master/"
 if [[ -n $1 ]]; then
   echo "Last line of file specified as non-opt/last argument:"
   tail -1 $1
@@ -119,43 +119,6 @@ if [[ -n $1 ]]; then
 fi
 
 ### end mac-components/argument
-
-fancy_echo "Installing Nginx, to server SSL connections ..."
-  brew_install_or_upgrade nginx
-
-fancy_echo "Creating config file..."
-  mkdir -p /usr/local/etc/nginx/sites-enabled
-  mkdir -p /usr/local/etc/nginx/sites-available
-  #cat "templates/nginx.conf" >  /usr/local/etc/nginx/nginx.conf
-  #cat "templates/app.dev" | sed "s/DOMAIN/$DOMAIN/g" | sed "s/DIRECTORY/$(echo $DIRECTORY | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/g" > /usr/local/etc/nginx/sites-available/"$DOMAIN".dev
-  curl -0 $REPOMAIN"/templates/nginx.conf" >  /usr/local/etc/nginx/nginx.conf 2>/dev/null
-  curl -0 $REPOMAIN"/templates/app.dev" 2>/dev/null | sed "s/DOMAIN/$DOMAIN/g" | sed "s/DIRECTORY/$(echo $DIRECTORY | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/g" > /usr/local/etc/nginx/sites-available/"$DOMAIN".dev
-
-fancy_echo "Enabling the SSL site..."
-  if [ -f  /usr/local/etc/nginx/sites-enabled/"$DOMAIN".dev ]; then
-    unlink /usr/local/etc/nginx/sites-enabled/"$DOMAIN".dev
-  fi
-  ln -s /usr/local/etc/nginx/sites-available/"$DOMAIN".dev /usr/local/etc/nginx/sites-enabled/"$DOMAIN".dev
-
-fancy_echo "Creating self-sign certificate..."
-  openssl genrsa -out "$DOMAIN".dev.key 2048
-  openssl req -new -key "$DOMAIN".dev.key -out "$DOMAIN".dev.csr -subj '/C=US/ST=CA/L=MT/O=MyCompany/OU=IT/CN="$DOMAIN"'
-  cp "$DOMAIN".dev.key "$DOMAIN".dev.key.bak
-  openssl rsa -in "$DOMAIN".dev.key.bak -out "$DOMAIN".dev.key
-  openssl x509 -req -days 365 -in "$DOMAIN".dev.csr -signkey "$DOMAIN".dev.key -out "$DOMAIN".dev.crt
-  mkdir -p /usr/local/etc/nginx/ssl
-  mv "$DOMAIN".dev.* /usr/local/etc/nginx/ssl
-
-fancy_echo "Creating log dir in /var/log/nginx..."
-  if [ ! -d "/var/log/nginx" ]; then
-    sudo mkdir /var/log/nginx/
-    sudo chown $(whoami) /var/log/nginx
-  fi
-
-fancy_echo "Starting nginx service with sudo to bind on port 443..."
-  brew_launchctl_restart nginx sudo
-
-### end mac-components/nginx
 
 fancy_echo "Checking Filevault status..."
   if [ "$(sudo fdesetup status)" == "FileVault is Off." ]; then
@@ -250,6 +213,43 @@ fancy_echo "Installing watch, to execute a program periodically and show the out
   brew_install_or_upgrade 'watch'
 
 ### end mac-components/packages
+
+fancy_echo "Installing Nginx, to server SSL connections ..."
+  brew_install_or_upgrade nginx
+
+fancy_echo "Creating config file..."
+  mkdir -p /usr/local/etc/nginx/sites-enabled
+  mkdir -p /usr/local/etc/nginx/sites-available
+  #cat "templates/nginx.conf" >  /usr/local/etc/nginx/nginx.conf
+  #cat "templates/app.dev" | sed "s/DOMAIN/$DOMAIN/g" | sed "s/DIRECTORY/$(echo $DIRECTORY | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/g" > /usr/local/etc/nginx/sites-available/"$DOMAIN".dev
+  curl -0 $REPOMAIN"/templates/nginx.conf" >  /usr/local/etc/nginx/nginx.conf 2>/dev/null
+  curl -0 $REPOMAIN"/templates/app.dev" 2>/dev/null | sed "s/DOMAIN/$DOMAIN/g" | sed "s/DIRECTORY/$(echo $DIRECTORY | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/g" > /usr/local/etc/nginx/sites-available/"$DOMAIN".dev
+
+fancy_echo "Enabling the SSL site..."
+  if [ -f  /usr/local/etc/nginx/sites-enabled/"$DOMAIN".dev ]; then
+    unlink /usr/local/etc/nginx/sites-enabled/"$DOMAIN".dev
+  fi
+  ln -s /usr/local/etc/nginx/sites-available/"$DOMAIN".dev /usr/local/etc/nginx/sites-enabled/"$DOMAIN".dev
+
+fancy_echo "Creating self-sign certificate..."
+  openssl genrsa -out "$DOMAIN".dev.key 2048
+  openssl req -new -key "$DOMAIN".dev.key -out "$DOMAIN".dev.csr -subj '/C=US/ST=CA/L=MT/O=MyCompany/OU=IT/CN="$DOMAIN"'
+  cp "$DOMAIN".dev.key "$DOMAIN".dev.key.bak
+  openssl rsa -in "$DOMAIN".dev.key.bak -out "$DOMAIN".dev.key
+  openssl x509 -req -days 365 -in "$DOMAIN".dev.csr -signkey "$DOMAIN".dev.key -out "$DOMAIN".dev.crt
+  mkdir -p /usr/local/etc/nginx/ssl
+  mv "$DOMAIN".dev.* /usr/local/etc/nginx/ssl
+
+fancy_echo "Creating log dir in /var/log/nginx..."
+  if [ ! -d "/var/log/nginx" ]; then
+    sudo mkdir /var/log/nginx/
+    sudo chown $(whoami) /var/log/nginx
+  fi
+
+fancy_echo "Starting nginx service with sudo to bind on port 443..."
+  brew_launchctl_restart nginx sudo
+
+### end mac-components/nginx
 
 fancy_echo "Installing ImageMagick, to crop and resize images ..."
   brew_install_or_upgrade 'imagemagick'
