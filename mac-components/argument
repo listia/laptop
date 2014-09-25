@@ -1,0 +1,35 @@
+while [[ $# > 1 ]]
+do
+key="$1"
+shift
+
+case $key in
+    -d|--dir)
+    DIRECTORY="$1"
+    shift
+    ;;
+    -h|--hostname)
+    DOMAIN="$1"
+    shift
+    ;;
+    -u|--yourname)
+    YOURUSERNAME="$1"
+    shift
+    ;;
+    --default)
+    DEFAULT=YES
+    shift
+    ;;
+    *)
+            # unknown option
+    ;;
+esac
+done
+
+REPOMAIN="https://raw.githubusercontent.com/listia/laptop/master/"
+if [[ -n $1 ]]; then
+  echo "Last line of file specified as non-opt/last argument:"
+  tail -1 $1
+  exit
+fi
+
