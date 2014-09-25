@@ -41,9 +41,9 @@ brew_launchctl_restart() {
     sudo launchctl load /Users/$(whoami)/Library/LaunchAgents/$PLIST >/dev/null
   else
     if launchctl list | grep -q $DOMAIN; then
-      sudo launchctl unload ~/Library/LaunchAgents/$PLIST >/dev/null
+      launchctl unload ~/Library/LaunchAgents/$PLIST >/dev/null
     fi
-    sudo launchctl load ~/Library/LaunchAgents/$PLIST >/dev/null
+    launchctl load ~/Library/LaunchAgents/$PLIST >/dev/null
   fi
 
 }

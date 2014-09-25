@@ -75,9 +75,9 @@ brew_launchctl_restart() {
     sudo launchctl load /Users/$(whoami)/Library/LaunchAgents/$PLIST >/dev/null
   else
     if launchctl list | grep -q $DOMAIN; then
-      sudo launchctl unload ~/Library/LaunchAgents/$PLIST >/dev/null
+      launchctl unload ~/Library/LaunchAgents/$PLIST >/dev/null
     fi
-    sudo launchctl load ~/Library/LaunchAgents/$PLIST >/dev/null
+    launchctl load ~/Library/LaunchAgents/$PLIST >/dev/null
   fi
 
 }
@@ -111,7 +111,7 @@ case $key in
 esac
 done
 
-REPOMAIN="https://raw.githubusercontent.com/listia/laptop/master/"
+REPOMAIN="https://raw.githubusercontent.com/listia/laptop/nginx_ssl_support/"
 if [[ -n $1 ]]; then
   echo "Last line of file specified as non-opt/last argument:"
   tail -1 $1
@@ -126,10 +126,10 @@ fancy_echo "Installing Nginx, to server SSL connections ..."
 fancy_echo "Creating config file..."
   mkdir -p /usr/local/etc/nginx/sites-enabled
   mkdir -p /usr/local/etc/nginx/sites-available
-  #curl -0 "$REPOMAIN/templates/nginx.conf" | sed >  /usr/local/etc/nginx/nginx.conf
-  cat "templates/nginx.conf" >  /usr/local/etc/nginx/nginx.conf
-  #curl -0 "$REPOMAIN/templates/app.dev" | sed "//" > /usr/local/etc/nginx/sites-available/"$DOMAIN".dev
-  cat "templates/app.dev" | sed "s/DOMAIN/$DOMAIN/g" | sed "s/DIRECTORY/$(echo $DIRECTORY | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/g" > /usr/local/etc/nginx/sites-available/"$DOMAIN".dev
+  #cat "templates/nginx.conf" >  /usr/local/etc/nginx/nginx.conf
+  #cat "templates/app.dev" | sed "s/DOMAIN/$DOMAIN/g" | sed "s/DIRECTORY/$(echo $DIRECTORY | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/g" > /usr/local/etc/nginx/sites-available/"$DOMAIN".dev
+  curl -0 $REPOMAIN"/templates/nginx.conf" >  /usr/local/etc/nginx/nginx.conf 2>/dev/null
+  curl -0 $REPOMAIN"/templates/app.dev" 2>/dev/null | sed "s/DOMAIN/$DOMAIN/g" | sed "s/DIRECTORY/$(echo $DIRECTORY | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/g" > /usr/local/etc/nginx/sites-available/"$DOMAIN".dev
 
 fancy_echo "Enabling the SSL site..."
   if [ -f  /usr/local/etc/nginx/sites-enabled/"$DOMAIN".dev ]; then
@@ -154,8 +154,6 @@ fancy_echo "Creating log dir in /var/log/nginx..."
 
 fancy_echo "Starting nginx service with sudo to bind on port 443..."
   brew_launchctl_restart nginx sudo
-
-exit
 
 ### end mac-components/nginx
 
