@@ -33,8 +33,17 @@ brew_launchctl_restart() {
   mkdir -p ~/Library/LaunchAgents
   ln -sfv /usr/local/opt/$NAME/$PLIST ~/Library/LaunchAgents
 
-  if launchctl list | grep -q $DOMAIN; then
-    launchctl unload ~/Library/LaunchAgents/$PLIST >/dev/null
+  if [ "$2" == "sudo" ]; then
+    sudo chown root ~/Library/LaunchAgents/$PLIST
+    if launchctl list | grep -q $DOMAIN; then
+      sudo launchctl unload /Users/$(whoami)/Library/LaunchAgents/$PLIST >/dev/null
+    fi
+    sudo launchctl load /Users/$(whoami)/Library/LaunchAgents/$PLIST >/dev/null
+  else
+    if launchctl list | grep -q $DOMAIN; then
+      launchctl unload ~/Library/LaunchAgents/$PLIST >/dev/null
+    fi
+    launchctl load ~/Library/LaunchAgents/$PLIST >/dev/null
   fi
-  launchctl load ~/Library/LaunchAgents/$PLIST >/dev/null
+
 }

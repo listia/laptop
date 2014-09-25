@@ -4,6 +4,8 @@ common-components/exit-trap
 common-components/check-home-bin
 common-components/shared-functions
 mac-components/mac-functions
+mac-components/argument
+mac-components/nginx
 mac-components/filevault
 mac-components/github
 mac-components/homebrew

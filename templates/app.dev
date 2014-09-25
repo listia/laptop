@@ -1,0 +1,25 @@
+server {
+  listen  443 ssl;
+  server_name DOMAIN;
+
+  root DIRECTORY;
+  index index.html index.htm;
+
+  ### SSL log files ###
+  access_log      /var/log/nginx/DOMAIN.dev-ssl-access.log;
+  error_log       /var/log/nginx/DOMAIN.dev-ssl-error.log;
+
+  ### SSL cert files ###
+  ssl_certificate      ssl/DOMAIN.dev.crt;
+  ssl_certificate_key  ssl/DOMAIN.dev.key;
+
+  location / {
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_redirect off;
+    proxy_pass http://DOMAIN.dev;
+    proxy_next_upstream error timeout invalid_header http_500 http_502 http_503;
+    proxy_set_header X-Forwarded-Proto https;
+  }
+}
