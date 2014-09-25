@@ -59,5 +59,3 @@ if [ "$autoimport" == "Y" ]; then
       fi
     done
 fi
-
-exit

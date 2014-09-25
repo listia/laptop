@@ -113,11 +113,16 @@ if [ "$autoimport" == "Y" ]; then
 
       # Check 2-factor login, get the otp token if needed, then send other request to grab the token
       perm="{\"note\":\"Listia Laptop: $(date)\",\"scopes\":[\"read:public_key\", \"write:public_key\"]}"
-      
       basicauth="$username:$password"
-      authorization=$(curl -d "$perm" -u "$basicauth" https://api.github.com/authorizations 2>/dev/null)
+      authorization=$(curl -i -d "$perm" -u "$basicauth" https://api.github.com/authorizations 2>/dev/null)
       if [ "$(echo $authorization | grep 'Must specify two-factor authentication')" == "" ]; then
-        echo "Wrong password"
+        if [ "$(echo $authorization | grep 'Listia Laptop:')" == "" ]; then
+          echo "Wrong password"
+        else
+          valid_password=1
+          payload="{\"title\":\"Listia\",\"key\":\"$(cat ~/.ssh/id_rsa.pub)\"}"
+          curl -u "$basicauth" -d "$payload" https://api.github.com/user/keys > /dev/null 2>&1
+        fi
       else
         valid_password=1
         valid_otptoken=""
