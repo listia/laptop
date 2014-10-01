@@ -289,9 +289,9 @@ fancy_echo "Installing Sphinx..."
   fi
 
   brew_install_or_upgrade apple-gcc42
-  if brew_is_installed "Sphinx"; then
+  #if brew_is_installed "Sphinx"; then
     brew install https://gist.githubusercontent.com/ngan/3186262/raw/4515131e51b2af16cbfd8d77ba56c3511d009403/sphinx.rb --mysql
-  fi
+  #fi
 
 ### end mac-components/sphinx
 
