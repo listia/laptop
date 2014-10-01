@@ -1,3 +1,6 @@
 fancy_echo "Upgrading and linking OpenSSL ..."
   brew_install_or_upgrade 'openssl'
   brew unlink openssl && brew link openssl --force
+
+fancy_echo "Upgrading and linking wget ..."
+  brew_install_or_upgrade 'wget'
