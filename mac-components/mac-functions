@@ -4,7 +4,6 @@ brew_install_or_upgrade() {
       #echo "$1 is installed. Ignore..."
     #fi
     fancy_echo "$1 is installed. Ignore..."
-    print "\n\n"
   else
     brew install "$@"
   fi
