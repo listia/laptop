@@ -4,5 +4,5 @@ fancy_echo "Installing ImageOptim..."
     sudo tar xvf /tmp/ImageOptim.tbz2 /Applications
     rm -rf /tmp/ImageOptim.tbz2
   else
-    echo "Ignore."
+    fancy_echo "Ignore."
   fi

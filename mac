@@ -37,7 +37,8 @@ brew_install_or_upgrade() {
     #if brew_is_upgradable "$1"; then
       #echo "$1 is installed. Ignore..."
     #fi
-    echo "$1 is installed. Ignore..."
+    fancy_echo "$1 is installed. Ignore..."
+    print "\n\n"
   else
     brew install "$@"
   fi
@@ -267,13 +268,14 @@ fancy_echo "Configuring Bundler for faster, parallel gem installation ..."
 fancy_echo "Installing Anvil..."
   if [ ! -d "/Applications/Anvil.app" ]; then
     wget http://sparkler.herokuapp.com/apps/3/download -O /tmp/Anvil.app.zip
-    echo $(md5 -r /tmp/Anvil.app.zip)
 
     #if [ "$(md5 -r /tmp/Anvil.app.zip)" == "d41d8cd98f00b204e9800998ecf8427e" ]; then
       echo "Enter your password to install Anvil into /Applications "
       sudo unzip -fo /tmp/Anvil.app.zip -d /Applications/
       #rm -f /tmp/Anvil.app.zip
     #fi
+  else
+    fancy_echo "Ignore"
   fi
 ### end mac-components/anvil
 
@@ -283,7 +285,7 @@ fancy_echo "Installing ImageOptim..."
     sudo tar xvf /tmp/ImageOptim.tbz2 /Applications
     rm -rf /tmp/ImageOptim.tbz2
   else
-    echo "Ignore."
+    fancy_echo "Ignore."
   fi
 ### end mac-components/imageoptim
 
@@ -303,7 +305,7 @@ fancy_echo "Installing Sphinx..."
 
   brew_install_or_upgrade apple-gcc42
   if brew_is_installed "Sphinx"; then
-    printf "Ignore"
+    fancy_echo "Sphinx 0.9.9 is installed. Ignore"
   else
     brew install https://raw.githubusercontent.com/listia/laptop/master/formula/sphinx.rb --mysql
   fi

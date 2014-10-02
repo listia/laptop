@@ -5,7 +5,7 @@ fancy_echo "Installing Sphinx..."
 
   brew_install_or_upgrade apple-gcc42
   if brew_is_installed "Sphinx"; then
-    printf "Ignore"
+    fancy_echo "Sphinx 0.9.9 is installed. Ignore"
   else
     brew install https://raw.githubusercontent.com/listia/laptop/master/formula/sphinx.rb --mysql
   fi
