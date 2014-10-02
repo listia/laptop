@@ -277,6 +277,16 @@ fancy_echo "Installing Anvil..."
   fi
 ### end mac-components/anvil
 
+fancy_echo "Installing ImageOptim..."
+  if [ ! -d "/Applications/ImageOptim.app" ]; then
+    wget https://imageoptim.com/ImageOptim.tbz2  -O /tmp/ImageOptim.tbz2
+    sudo tar xvf /tmp/ImageOptim.tbz2 /Applications
+    rm -rf /tmp/ImageOptim.tbz2
+  else
+    echo "Ignore."
+  fi
+### end mac-components/imageoptim
+
 fancy_echo "Installing MySQL 5.5.30 ..."
   if [ "$(brew tap | grep versions)" == "" ]; then
     brew tap homebrew/versions
