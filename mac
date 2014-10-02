@@ -281,7 +281,7 @@ fancy_echo "Installing Anvil..."
 fancy_echo "Installing ImageOptim..."
   if [ ! -d "/Applications/ImageOptim.app" ]; then
     wget https://imageoptim.com/ImageOptim.tbz2  -O /tmp/ImageOptim.tbz2
-    sudo tar xvf /tmp/ImageOptim.tbz2 /Applications
+    sudo tar xvf /tmp/ImageOptim.tbz2 -c /Applications
     rm -rf /tmp/ImageOptim.tbz2
   else
     fancy_echo "Ignore."
