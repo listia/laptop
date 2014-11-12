@@ -353,16 +353,16 @@ fancy_echo "Installing MySQL5.6 ..."
   fi
 
   if ( mysql --version | grep -q "5.5" ); then
-    brew remove https://gist.githubusercontent.com/ngan/f1e3268855262514a607/raw/beb171d376303d5e3397adca500d30834bab8b7a/mysql.rb
-    brew unlink mysql
-    brew unpin mysql
+    if (brew remove https://gist.githubusercontent.com/ngan/f1e3268855262514a607/raw/beb171d376303d5e3397adca500d30834bab8b7a/mysql.rb || brew unlink mysql || brew unpin mysql); then
+      fancy_echo "Removed MySQL5.5 Formula"
+    fi
     mysqldata_need_update=1
   fi
 
   if (brew list | grep -q "mysql55"); then
-    brew unlink mysql55
-    brew unpin mysql55
-    mysqldata_need_update=1
+    if (brew unlink mysql55 || brew unpin mysql55 || mysqldata_need_update=1); then
+      fancy_echo "Removed MySQL5.5 from tap"
+    fi
   fi
 
   if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
