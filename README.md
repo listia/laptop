@@ -1,7 +1,7 @@
 Laptop
 ======
 
-Laptop is a script to set up a Mac OS X or Linux laptop for Rails development.
+Laptop is a script to set up a Mac OS X for Rails development.
 
 Requirements
 ------------
@@ -15,19 +15,10 @@ We support:
 Older versions may work but aren't regularly tested. Bug reports for older
 versions are welcome.
 
-### Linux
-
-We support:
-
-* [14.04: Trusty Tahr](https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes),
-* [12.04 LTS: Precise Pangolin](https://wiki.ubuntu.com/PrecisePangolin/ReleaseNotes),
-* Debian stable (currently [wheezy](http://www.debian.org/releases/stable/)).
-* Debian testing (currently [jessie](http://www.debian.org/releases/testing/)).
-
 Install
 -------
 
-    bash <(curl -s https://raw.githubusercontent.com/listia/laptop/master/bootstrap) 2>&1 | tee ~/laptop.log
+    bash <(curl -s https://raw.githubusercontent.com/listia/laptop/master/map) 2>&1 | tee ~/laptop.log
 
 
 Debugging
