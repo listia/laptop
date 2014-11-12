@@ -7,6 +7,7 @@
 #  brew link --force mysql55
 
 fancy_echo "Installing MySQL5.6 ..."
+  fancy_echo "Updating brew formula..."
   brew update
   if (ps -Af | grep -q "[m]ysql55" ) ; then
     fancy_echo "Found MySQL5.5 is running ... Attempting to stop it..."
