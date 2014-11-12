@@ -339,6 +339,7 @@ if ( echo "mac-components/mysql" | grep -q "$PACKAGE" ); then
 #  brew link --force mysql55
 
 fancy_echo "Installing MySQL5.6 ..."
+  brew update
   if (ps -Af | grep -q "[m]ysql55" ) ; then
     fancy_echo "Found MySQL5.5 is running ... Attempting to stop it..."
     if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
@@ -348,9 +349,17 @@ fancy_echo "Installing MySQL5.6 ..."
       fancy_echo "launchd file not found. Stop with mysql.server"
       /usr/local/bin/mysql.server stop
     fi
+  fi
+
+  if (brew list | grep -q "mysql55"); then
     brew unlink mysql55
     brew unpin mysql55
-    data_need_update=1
+    mysqldata_need_update=1
+  fi
+
+  if ( mysql --version | grep -q "5.5" ); then
+    brew unlink mysql
+    mysqldata_need_update=1
   fi
 
   if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
@@ -361,18 +370,27 @@ fancy_echo "Installing MySQL5.6 ..."
   brew_install_or_upgrade mysql
   brew link mysql
 
-  if [[ "$data_need_update" ]]; then
+  if [[ "$mysqldata_need_update" ]]; then
     fancy_echo "Upgrading data format to 5.6..."
-    rm -rf /usr/local/var/mysql
-    fancy_echo "..."
-    cp -rf /usr/local/var/mysql55 /usr/local/var/mysql
-    fancy_echo "..."
-    brew_launchctl_restart mysql
+
+    if [ -d /usr/local/var/mysql55 ]; then
+      fancy_echo "Found /usr/local/var/mysql55 data dir. Migration this data folder..."
+      cp -rf /usr/local/var/mysql /usr/local/var/mysql.backup
+      fancy_echo "..."
+      cp -rf /usr/local/var/mysql55 /usr/local/var/mysql
+    fi
+
     fancy_echo "Starting mysql5.6..."
+    brew_launchctl_restart mysql
     sleep 3
     fancy_echo "Upgrade data to 5.6 format"
-    mysql_upgrade
+    if mysql_upgrade; then
+      echo "Data upgrade finished."
+    else
+      echo "Don't need to upgrade data. Ignore."
+    fi
   fi
+
   brew pin mysql
 
 fi
