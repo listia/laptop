@@ -18,6 +18,7 @@ fancy_echo "Installing MySQL5.6 ..."
     fi
     brew unlink mysql55
     brew unpin mysql55
+    data_need_update=1
   fi
 
   if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
@@ -29,4 +30,17 @@ fancy_echo "Installing MySQL5.6 ..."
   brew link mysql
   fancy_echo "Update sql_mode to remove STRICT_TRANS_TABLES"
   sed -i 'listia' 's/sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES/sql_mode=NO_ENGINE_SUBSTITUTION/' /usr/local/opt/mysql/my.cnf
-  exit
+
+  if [[ "$data_need_update" ]]; then
+    fancy_echo "Upgrading data format to 5.6..."
+    rm -rf /usr/local/var/mysql
+    fancy_echo "..."
+    cp -rf /usr/local/var/mysql55 /usr/local/var/mysql
+    fancy_echo "..."
+    brew_launchctl_restart mysql
+    fancy_echo "Starting mysql5.6..."
+    sleep 3
+    fancy_echo "Upgrade data to 5.6 format"
+    mysql_upgrade
+  fi
+
