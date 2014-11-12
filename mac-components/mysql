@@ -21,6 +21,7 @@ fancy_echo "Installing MySQL5.6 ..."
   fi
 
   if ( mysql --version | grep -q "5.5" ); then
+    brew remove https://gist.githubusercontent.com/ngan/f1e3268855262514a607/raw/beb171d376303d5e3397adca500d30834bab8b7a/mysql.rb
     brew unlink mysql
     brew unpin mysql
     mysqldata_need_update=1
