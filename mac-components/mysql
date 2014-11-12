@@ -43,4 +43,5 @@ fancy_echo "Installing MySQL5.6 ..."
     fancy_echo "Upgrade data to 5.6 format"
     mysql_upgrade
   fi
+  brew pin mysql
 
