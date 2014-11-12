@@ -12,6 +12,10 @@ case $key in
     DOMAIN="$1"
     shift
     ;;
+    -p|--package)
+    PACKAGE="$1"
+    shift
+    ;;
     -u|--yourname)
     YOURUSERNAME="$1"
     shift
@@ -33,3 +37,7 @@ if [[ -n $1 ]]; then
   exit
 fi
 
+if [[ "$PACKAGE" ]]; then
+  fancy_echo "..................................................."
+  fancy_echo "Single package install mode. Will install: $PACKAGE..."
+fi

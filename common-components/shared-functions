@@ -1,3 +1,11 @@
 fancy_echo() {
   printf "\n%b\n" "$1"
 }
+fancy_line() {
+ fancy_echo "............................................."
+}
+fancy_para() {
+ fancy_echo "#############################################"
+ fancy_echo " "
+ fancy_echo " "
+}

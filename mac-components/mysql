@@ -1,7 +1,32 @@
-fancy_echo "Installing MySQL 5.5.30 ..."
-  if [ "$(brew tap | grep versions)" == "" ]; then
-    brew tap homebrew/versions
+#fancy_echo "Installing MySQL 5.5.30 ..."
+#  if [ "$(brew tap | grep versions)" == "" ]; then
+#    brew tap homebrew/versions
+#  fi
+
+#  brew_install_or_upgrade mysql55
+#  brew link --force mysql55
+
+fancy_echo "Installing MySQL5.6 ..."
+  if (ps -Af | grep -q "[m]ysql55" ) ; then
+    fancy_echo "Found MySQL5.5 is running ... Attempting to stop it..."
+    if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
+      fancy_echo "Found the launchd file. Stop with lauchctl..."
+      launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist
+    else
+      fancy_echo "launchd file not found. Stop with mysql.server"
+      /usr/local/bin/mysql.server stop
+    fi
+    brew unlink mysql55
+    brew unpin mysql55
   fi
 
-  brew_install_or_upgrade mysql55
-  brew link --force mysql55
+  if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
+      fancy_echo "Attempt to unlink launchd file manully for MySQL55"
+      unlink ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist
+  fi
+
+  brew_install_or_upgrade mysql
+  brew link mysql
+  fancy_echo "Update sql_mode to remove STRICT_TRANS_TABLES"
+  sed -i 'listia' 's/sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES/sql_mode=NO_ENGINE_SUBSTITUTION/' /usr/local/opt/mysql/my.cnf
+  exit

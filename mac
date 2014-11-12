@@ -30,6 +30,14 @@ fi
 fancy_echo() {
   printf "\n%b\n" "$1"
 }
+fancy_line() {
+ fancy_echo "............................................."
+}
+fancy_para() {
+ fancy_echo "#############################################"
+ fancy_echo " "
+ fancy_echo " "
+}
 ### end common-components/shared-functions
 
 brew_install_or_upgrade() {
@@ -98,6 +106,10 @@ case $key in
     DOMAIN="$1"
     shift
     ;;
+    -p|--package)
+    PACKAGE="$1"
+    shift
+    ;;
     -u|--yourname)
     YOURUSERNAME="$1"
     shift
@@ -119,16 +131,23 @@ if [[ -n $1 ]]; then
   exit
 fi
 
+if [[ "$PACKAGE" ]]; then
+  fancy_echo "..................................................."
+  fancy_echo "Single package install mode. Will install: $PACKAGE..."
+fi
 ### end mac-components/argument
 
+if ( echo "mac-components/filevault" | grep -q "$PACKAGE" ); then
 fancy_echo "Checking Filevault status..."
   if [ "$(sudo fdesetup status)" == "FileVault is Off." ]; then
     fancy_echo "Please turn on Filevault. https://github.com/listia/listia/wiki/Computer-Security"
     exit
   fi
 
+fi
 ### end mac-components/filevault
 
+if ( echo "mac-components/github" | grep -q "$PACKAGE" ); then
 github_add_key() {
   result=$(curl -H "Authorization: token $1" -d "{\"title\":\"Listia\",\"key\":\"$2\"}" https://api.github.com/user/keys > /dev/null 2>&1)
 }
@@ -190,8 +209,10 @@ if [ "$autoimport" == "Y" ]; then
       fi
     done
 fi
+fi
 ### end mac-components/github
 
+if ( echo "mac-components/homebrew" | grep -q "$PACKAGE" ); then
 if ! command -v brew >/dev/null; then
   fancy_echo "Installing Homebrew, a good OS X package manager ..."
     ruby <(curl -fsS https://raw.githubusercontent.com/Homebrew/homebrew/go/install)
@@ -208,19 +229,25 @@ fi
 
 fancy_echo "Updating Homebrew formulas ..."
   # brew update
+fi
 ### end mac-components/homebrew
 
+if ( echo "mac-components/packages" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing watch, to execute a program periodically and show the output ..."
   brew_install_or_upgrade 'watch'
 
+fi
 ### end mac-components/packages
 
+if ( echo "mac-components/imagemagick" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing ImageMagick, to crop and resize images ..."
   brew_install_or_upgrade 'imagemagick'
 
 
+fi
 ### end mac-components/imagemagick
 
+if ( echo "mac-components/rvm" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing rvm, to change Ruby versions ..."
   if [ "rvm not found" == "$(which rvm)" ]; then
     curl -L https://get.rvm.io | bash -s stable
@@ -229,16 +256,23 @@ fancy_echo "Installing rvm, to change Ruby versions ..."
     echo "Found an rvm"
   fi
 
+fi
 ### end mac-components/rvm
 
+fancy_echo "Install common libraries and utilities"
+fancy_line
 fancy_echo "Upgrading and linking OpenSSL ..."
   brew_install_or_upgrade 'openssl'
   brew unlink openssl && brew link openssl --force
 
 fancy_echo "Upgrading and linking wget ..."
   brew_install_or_upgrade 'wget'
+
+fancy_echo "Finish. Start to install packages."
+fancy_para
 ### end mac-components/compiler-and-libraries
 
+if ( echo "common-components/ruby-environment" | grep -q "$PACKAGE" ); then
 ruby_version="ruby-1.9.3-p327"
 
 fancy_echo "Installing Ruby $ruby_version ..."
@@ -252,8 +286,10 @@ fancy_echo "Installing Ruby $ruby_version ..."
 #  rvm "$ruby_version@listia"
 
 
+fi
 ### end common-components/ruby-environment
 
+if ( echo "mac-components/bundler" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing Bundler to install project-specific Ruby gems ..."
   gem install bundler --no-document --pre
 
@@ -262,8 +298,10 @@ fancy_echo "Configuring Bundler for faster, parallel gem installation ..."
   bundle config --global jobs $((number_of_cores - 1))
 
 
+fi
 ### end mac-components/bundler
 
+if ( echo "mac-components/anvil" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing Anvil..."
   if [ ! -d "/Applications/Anvil.app" ]; then
     wget http://sparkler.herokuapp.com/apps/3/download -O /tmp/Anvil.app.zip
@@ -276,8 +314,10 @@ fancy_echo "Installing Anvil..."
   else
     fancy_echo "Ignore"
   fi
+fi
 ### end mac-components/anvil
 
+if ( echo "mac-components/imageoptim" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing ImageOptim..."
   if [ ! -d "/Applications/ImageOptim.app" ]; then
     wget https://imageoptim.com/ImageOptim.tbz2  -O /tmp/ImageOptim.tbz2
@@ -286,17 +326,46 @@ fancy_echo "Installing ImageOptim..."
   else
     fancy_echo "Ignore."
   fi
+fi
 ### end mac-components/imageoptim
 
-fancy_echo "Installing MySQL 5.5.30 ..."
-  if [ "$(brew tap | grep versions)" == "" ]; then
-    brew tap homebrew/versions
+if ( echo "mac-components/mysql" | grep -q "$PACKAGE" ); then
+#fancy_echo "Installing MySQL 5.5.30 ..."
+#  if [ "$(brew tap | grep versions)" == "" ]; then
+#    brew tap homebrew/versions
+#  fi
+
+#  brew_install_or_upgrade mysql55
+#  brew link --force mysql55
+
+fancy_echo "Installing MySQL5.6 ..."
+  if (ps -Af | grep -q "[m]ysql55" ) ; then
+    fancy_echo "Found MySQL5.5 is running ... Attempting to stop it..."
+    if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
+      fancy_echo "Found the launchd file. Stop with lauchctl..."
+      launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist
+    else
+      fancy_echo "launchd file not found. Stop with mysql.server"
+      /usr/local/bin/mysql.server stop
+    fi
+    brew unlink mysql55
+    brew unpin mysql55
   fi
 
-  brew_install_or_upgrade mysql55
-  brew link --force mysql55
+  if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
+      fancy_echo "Attempt to unlink launchd file manully for MySQL55"
+      unlink ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist
+  fi
+
+  brew_install_or_upgrade mysql
+  brew link mysql
+  fancy_echo "Update sql_mode to remove STRICT_TRANS_TABLES"
+  sed -i 'listia' 's/sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES/sql_mode=NO_ENGINE_SUBSTITUTION/' /usr/local/opt/mysql/my.cnf
+  exit
+fi
 ### end mac-components/mysql
 
+if ( echo "mac-components/sphinx" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing Sphinx..."
   if [ "$(brew tap | grep versions)" == "" ]; then
     brew tap homebrew/dupes
@@ -309,8 +378,10 @@ fancy_echo "Installing Sphinx..."
     brew install https://raw.githubusercontent.com/listia/laptop/master/formula/sphinx.rb --mysql
   fi
 
+fi
 ### end mac-components/sphinx
 
+if ( echo "mac-components/nginx" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing Nginx, to server SSL connections ..."
   brew_install_or_upgrade nginx
 
@@ -346,16 +417,19 @@ fancy_echo "Creating log dir in /var/log/nginx..."
 fancy_echo "Starting nginx service with sudo to bind on port 443..."
   brew_launchctl_restart nginx sudo
 
+fi
 ### end mac-components/nginx
 
 fancy_echo "Starting MySQL ..."
-  brew_launchctl_restart mysql55
+  brew_launchctl_restart mysql
 
 ### end mac-components/start-services
 
+if ( echo "common-components/personal-additions" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing your personal additions from ~/.laptop.local ..."
   if [[ -f ~/.laptop.local ]]; then
     source ~/.laptop.local
   fi
+fi
 ### end common-components/personal-additions
 
