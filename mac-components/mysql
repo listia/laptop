@@ -21,6 +21,7 @@ fancy_echo "Installing MySQL5.6 ..."
 
   if ( mysql --version | grep -q "5.5" ); then
     brew unlink mysql
+    brew unpin mysql
     mysqldata_need_update=1
   fi
 
