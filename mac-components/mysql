@@ -28,8 +28,6 @@ fancy_echo "Installing MySQL5.6 ..."
 
   brew_install_or_upgrade mysql
   brew link mysql
-  fancy_echo "Update sql_mode to remove STRICT_TRANS_TABLES"
-  sed -i 'listia' 's/sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES/sql_mode=NO_ENGINE_SUBSTITUTION/' /usr/local/opt/mysql/my.cnf
 
   if [[ "$data_need_update" ]]; then
     fancy_echo "Upgrading data format to 5.6..."
