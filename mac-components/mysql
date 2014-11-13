@@ -38,6 +38,24 @@ fancy_echo "Installing MySQL5.6 ..."
       unlink ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist
   fi
 
+  # Update for people use MAC OS X Image
+  # http://dev.mysql.com/doc/mysql-macosx-excerpt/5.1/en/macosx-installation-startupitem.html
+  if [ -f /usr/local/mysql/bin/mysqld ]; then
+    fancy_echo "Found an installation of MAC DMG. Try to stop it..."
+    fancy_echo "Going to use sudo to stop mysqld. Please enter password..."
+    if [ -d /Library/StartupItems/MySQLCOM ]; then
+      sudo /Library/StartupItems/MySQLCOM/MySQLCOM stop
+    else
+      sudo /usr/local/mysql/bin/mysqld stop
+    fi
+
+    if [ -d /usr/local/mysql/data ]; then
+      fancy_echo "Found /usr/local/mysql/data data dir. Migration this data folder..."
+      fancy_echo "..."
+      cp -rf /usr/local/mysql/data /usr/local/var/mysql
+    fi
+  fi
+
   brew_install_or_upgrade mysql
   brew link mysql
 
