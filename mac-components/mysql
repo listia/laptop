@@ -54,6 +54,8 @@ fancy_echo "Installing MySQL5.6 ..."
       fancy_echo "..."
       cp -rf /usr/local/mysql/data /usr/local/var/mysql
     fi
+    fancy_echo "Removing old MYSQL start-up item. Please enter password..."
+    sudo rm -rf /Library/StartupItems/MySQLCOM
   fi
 
   brew_install_or_upgrade mysql
