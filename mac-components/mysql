@@ -41,6 +41,7 @@ fancy_echo "Installing MySQL5.6 ..."
   # Update for people use MAC OS X Image
   # http://dev.mysql.com/doc/mysql-macosx-excerpt/5.1/en/macosx-installation-startupitem.html
   if [ -f /usr/local/mysql/bin/mysqld ]; then
+    mysqldata_need_update=1
     fancy_echo "Found an installation of MAC DMG. Try to stop it..."
     fancy_echo "Going to use sudo to stop mysqld. Please enter password..."
     if [ -d /Library/StartupItems/MySQLCOM ]; then
@@ -52,7 +53,7 @@ fancy_echo "Installing MySQL5.6 ..."
     if [ -d /usr/local/mysql/data ]; then
       fancy_echo "Found /usr/local/mysql/data data dir. Migration this data folder..."
       fancy_echo "..."
-      sudo cp -rf /usr/local/mysql/data /usr/local/var/mysql
+      sudo cp -rf /usr/local/mysql/data/ /usr/local/var/mysql
       sudo chown -R $(whoami) /usr/local/var/mysql
     fi
     fancy_echo "Removing old MYSQL start-up item. Please enter password..."
@@ -68,6 +69,7 @@ fancy_echo "Installing MySQL5.6 ..."
     if [ -d /usr/local/var/mysql55 ]; then
       fancy_echo "Found /usr/local/var/mysql55 data dir. Migration this data folder..."
       cp -rf /usr/local/var/mysql /usr/local/var/mysql.backup
+      rm -rf /usr/local/var/mysql
       fancy_echo "..."
       cp -rf /usr/local/var/mysql55 /usr/local/var/mysql
     fi
