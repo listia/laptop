@@ -263,11 +263,11 @@ fi
 fancy_echo "Install common libraries and utilities"
 fancy_line
 fancy_echo "Upgrading and linking OpenSSL ..."
-  brew_install_or_upgrade 'openssl'
+  brew install 'openssl'
   brew unlink openssl && brew link openssl --force
 
 fancy_echo "Upgrading and linking wget ..."
-  brew_install_or_upgrade 'wget'
+  brew install 'wget'
 
 fancy_echo "Finish. Start to install packages."
 fancy_para
