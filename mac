@@ -269,7 +269,9 @@ fancy_echo "Upgrading and linking OpenSSL ..."
   brew unlink openssl && brew link openssl --force
 
 fancy_echo "Upgrading and linking wget ..."
-  brew install 'wget'
+  if (brew install 'wget'); then
+    echo "Install WGET"
+  fi
 
 fancy_echo "Finish. Start to install packages."
 fancy_para
