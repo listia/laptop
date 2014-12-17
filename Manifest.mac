@@ -15,6 +15,7 @@ mac-components/compiler-and-libraries
 common-components/ruby-environment
 mac-components/bundler
 mac-components/anvil
+mac-components/hipchat
 mac-components/imageoptim
 mac-components/mysql
 mac-components/sphinx
