@@ -274,7 +274,7 @@ fancy_para
 ### end mac-components/compiler-and-libraries
 
 if ( echo "common-components/ruby-environment" | grep -q "$PACKAGE" ); then
-ruby_version="ruby-1.9.3-p327"
+ruby_version="ruby-1.9.3-p547"
 
 fancy_echo "Installing Ruby $ruby_version ..."
   if [ -n "$(rvm list | grep "$ruby_version")" ]; then
