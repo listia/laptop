@@ -1,7 +1,12 @@
 fancy_echo "Installing Sphinx..."
-  if [ "$(brew tap | grep versions)" == "" ]; then
+  if [ "$(brew tap | grep dupes)" == "" ]; then
     brew tap homebrew/dupes
   fi
+  if [ "$(brew tap | grep versions)" == "" ]; then
+    brew tap homebrew/versions
+  fi
+
+
 
   brew_install_or_upgrade apple-gcc42
   if brew_is_installed "Sphinx"; then

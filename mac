@@ -445,9 +445,14 @@ fi
 
 if ( echo "mac-components/sphinx" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing Sphinx..."
-  if [ "$(brew tap | grep versions)" == "" ]; then
+  if [ "$(brew tap | grep dupes)" == "" ]; then
     brew tap homebrew/dupes
   fi
+  if [ "$(brew tap | grep versions)" == "" ]; then
+    brew tap homebrew/versions
+  fi
+
+
 
   brew_install_or_upgrade apple-gcc42
   if brew_is_installed "Sphinx"; then
@@ -498,7 +503,7 @@ fancy_echo "Starting nginx service with sudo to bind on port 443..."
 fi
 ### end mac-components/nginx
 
-fancy_echo "Starting MySQL ..."
+fancy_echo "Re starting MySQL ..."
   brew_launchctl_restart mysql
 
 ### end mac-components/start-services
