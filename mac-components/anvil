@@ -4,7 +4,7 @@ fancy_echo "Installing Anvil..."
 
     #if [ "$(md5 -r /tmp/Anvil.app.zip)" == "d41d8cd98f00b204e9800998ecf8427e" ]; then
       echo "Enter your password to install Anvil into /Applications "
-      sudo unzip -fo /tmp/Anvil.app.zip -d /Applications/
+      sudo unzip -o /tmp/Anvil.app.zip -d /Applications/
       #rm -f /tmp/Anvil.app.zip
     #fi
   else
