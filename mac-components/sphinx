@@ -6,11 +6,18 @@ fancy_echo "Installing Sphinx..."
     brew tap homebrew/versions
   fi
 
-
-
   brew_install_or_upgrade apple-gcc42
+  if ( brew list | grep -q sphinx ); then
+    if ( brew list sphinx | grep -q 0.9.9 ); then
+      fancy_echo "Sphinx 0.9.9 is installed. Will remove to prepare 2.2.8 upgrade."
+      brew unlink sphinx
+    fi
+  else
+    brew install https://raw.githubusercontent.com/listia/laptop/master/formula/sphinx.rb --mysql
+  fi
+
   if brew_is_installed "Sphinx"; then
-    fancy_echo "Sphinx 0.9.9 is installed. Ignore"
+    fancy_echo "Sphinx 2.2.8 is installed. Ignore."
   else
     brew install https://raw.githubusercontent.com/listia/laptop/master/formula/sphinx.rb --mysql
   fi
