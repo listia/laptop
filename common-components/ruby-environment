@@ -6,6 +6,7 @@ fancy_echo "Installing Ruby $ruby_version ..."
   else
     rvm get head
     rvm install "$ruby_version" --disable-binary --patch railsexpress
+    rvm-exec "$ruby_version@global" gem install bundler -v 1.9.4
   fi
 #fancy_echo "Setting $ruby_version as global default Ruby ..."
 #  rvm "$ruby_version@listia"
