@@ -1,12 +1,12 @@
-ruby_version="ruby-1.9.3-p547"
+ruby_version="ruby-2.0.0-p645"
 
 fancy_echo "Installing Ruby $ruby_version ..."
   if [ -n "$(rvm list | grep "$ruby_version")" ]; then
     echo "Ruby $ruby_version is installed. Ignore..."
   else
+    rvm get head
     rvm install "$ruby_version" --disable-binary --patch railsexpress
   fi
-
 #fancy_echo "Setting $ruby_version as global default Ruby ..."
 #  rvm "$ruby_version@listia"
 
