@@ -1,8 +1,9 @@
 fancy_echo "Installing rvm, to change Ruby versions ..."
-  #if [ "rvm not found" == "$(which rvm)" ]; then
+  rvm -v
+  if [ "0" = "$?" ]; then
+    echo "Found an rvm"
+  else
     curl -L https://get.rvm.io | bash -s stable
     source ~/.rvm/scripts/rvm
-  #else
-  #  echo "Found an rvm"
-  #fi
+  fi
 
