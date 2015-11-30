@@ -250,8 +250,8 @@ fi
 
 if ( echo "mac-components/rvm" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing rvm, to change Ruby versions ..."
-  where rvm | grep 'not found'
-  if [ "1" = "$?" ]; then
+  rvmdetect="$(rvm > /dev/null 2>&1)"
+  if [ "0" = "$?" ]; then
     echo "Found an rvm"
   else
     curl -L https://get.rvm.io | bash -s stable
