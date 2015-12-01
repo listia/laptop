@@ -363,7 +363,8 @@ if ( echo "mac-components/mysql" | grep -q "$PACKAGE" ); then
 
 fancy_echo "Installing MySQL5.6 ..."
   fancy_echo "Updating brew formula..."
-  brew update
+  brew update >> /tmp/laptop.log 2>&1
+
   if (ps -Af | grep -q "[m]ysql55" ) ; then
     fancy_echo "Found MySQL5.5 is running ... Attempting to stop it..."
     if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
@@ -416,7 +417,7 @@ fancy_echo "Installing MySQL5.6 ..."
   fi
 
   brew_install_or_upgrade mysql56
-  brew link mysql56
+  brew link mysql56  >> /tmp/laptop.log 2>&1
 
   if [[ "$mysqldata_need_update" ]]; then
     fancy_echo "Upgrading data format to 5.6..."
@@ -441,7 +442,14 @@ fancy_echo "Installing MySQL5.6 ..."
 
   fi
 
-  brew pin mysql56
+  echo -e "Relax default setting of MySQL56:\n"
+  cat > /usr/local/etc/my.cnf.d/relax.cnf <<- EOM
+[mysqld]
+sql-mode="NO_ENGINE_SUBSTITUTION"
+EOM
+  cat /usr/local/etc/my.cnf.d/relax.cnf
+
+  brew pin mysql56 >> /tmp/laptop.log 2>&1
 
 fi
 ### end mac-components/mysql
