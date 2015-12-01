@@ -1,13 +1,13 @@
 fancy_echo "Install common libraries and utilities"
 fancy_line
 fancy_echo "Checking: Upgrading and linking OpenSSL ..."
-  if (brew install 'openssl'); then
+  if (brew install 'openssl' > /dev/null 2>&1); then
     echo "Installed OpenSSL"
   fi
-  brew unlink openssl > /dev/null && brew link openssl --force > /dev/null
+  brew unlink openssl > /dev/null 2>&1 && brew link openssl --force > /dev/null 2>&1
 
 fancy_echo "Checking: Upgrading and linking wget ..."
-  if (brew install 'wget'); then
+  if (brew install 'wget' > /dev/null 2>&1); then
     echo "Install WGET"
   fi
 

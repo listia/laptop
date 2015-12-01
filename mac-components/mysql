@@ -60,7 +60,7 @@ fancy_echo "Installing MySQL5.6 ..."
     sudo rm -rf /Library/StartupItems/MySQLCOM
   fi
 
-  brew_install_or_upgrade mysql
+  brew_install_or_upgrade mysql56
   brew link mysql
 
   if [[ "$mysqldata_need_update" ]]; then
