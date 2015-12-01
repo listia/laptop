@@ -441,7 +441,7 @@ fancy_echo "Installing MySQL5.6 ..."
 
   fi
 
-  brew pin mysql
+  brew pin mysql56
 
 fi
 ### end mac-components/mysql
