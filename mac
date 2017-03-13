@@ -353,94 +353,14 @@ fi
 ### end mac-components/imageoptim
 
 if ( echo "mac-components/mysql" | grep -q "$PACKAGE" ); then
-#fancy_echo "Installing MySQL 5.5.30 ..."
-#  if [ "$(brew tap | grep versions)" == "" ]; then
-#    brew tap homebrew/versions
-#  fi
-
-#  brew_install_or_upgrade mysql55
-#  brew link --force mysql55
 
 fancy_echo "Installing MySQL5.6 ..."
   fancy_echo "Updating brew formula..."
   brew update >> /tmp/laptop.log 2>&1
 
-  if (ps -Af | grep -q "[m]ysql55" ) ; then
-    fancy_echo "Found MySQL5.5 is running ... Attempting to stop it..."
-    if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
-      fancy_echo "Found the launchd file. Stop with lauchctl..."
-      launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist
-    else
-      fancy_echo "launchd file not found. Stop with mysql.server"
-      /usr/local/bin/mysql.server stop
-    fi
-  fi
-
-  if ( mysql --version | grep -q "5.5" ); then
-    if (brew remove https://gist.githubusercontent.com/ngan/f1e3268855262514a607/raw/beb171d376303d5e3397adca500d30834bab8b7a/mysql.rb || brew unlink mysql || brew unpin mysql); then
-      fancy_echo "Removed MySQL5.5 Formula"
-    fi
-    mysqldata_need_update=1
-  fi
-
-  if (brew list | grep -q "mysql55"); then
-    if (brew unlink mysql55 || brew unpin mysql55 || mysqldata_need_update=1); then
-      fancy_echo "Removed MySQL5.5 from tap"
-    fi
-  fi
-
-  if [ -f ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist ]; then
-      fancy_echo "Attempt to unlink launchd file manully for MySQL55"
-      unlink ~/Library/LaunchAgents/homebrew.mxcl.mysql55.plist
-  fi
-
-  # Update for people use MAC OS X Image
-  # http://dev.mysql.com/doc/mysql-macosx-excerpt/5.1/en/macosx-installation-startupitem.html
-  if [ -f /usr/local/mysql/bin/mysqld ]; then
-    mysqldata_need_update=1
-    fancy_echo "Found an installation of MAC DMG. Try to stop it..."
-    fancy_echo "Going to use sudo to stop mysqld. Please enter password..."
-    if [ -d /Library/StartupItems/MySQLCOM ]; then
-      if (sudo /Library/StartupItems/MySQLCOM/MySQLCOM stop || sudo /usr/local/mysql/bin/mysqld stop); then
-        fancy_echo "."
-      fi
-    fi
-
-    if [ -d /usr/local/mysql/data ]; then
-      fancy_echo "Found /usr/local/mysql/data data dir. Migration this data folder..."
-      fancy_echo "..."
-      sudo cp -rf /usr/local/mysql/data/ /usr/local/var/mysql
-      sudo chown -R $(whoami) /usr/local/var/mysql
-    fi
-    fancy_echo "Removing old MYSQL start-up item. Please enter password..."
-    sudo rm -rf /Library/StartupItems/MySQLCOM
-  fi
-
-  brew_install_or_upgrade mysql56
-  brew link mysql56  >> /tmp/laptop.log 2>&1
-
-  if [[ "$mysqldata_need_update" ]]; then
-    fancy_echo "Upgrading data format to 5.6..."
-
-    if [ -d /usr/local/var/mysql55 ]; then
-      fancy_echo "Found /usr/local/var/mysql55 data dir. Migration this data folder..."
-      cp -rf /usr/local/var/mysql /usr/local/var/mysql.backup
-      rm -rf /usr/local/var/mysql
-      fancy_echo "..."
-      cp -rf /usr/local/var/mysql55 /usr/local/var/mysql
-    fi
-
-    fancy_echo "Starting mysql5.6..."
-    brew_launchctl_restart mysql
-    sleep 3
-    fancy_echo "Upgrade data to 5.6 format"
-    if mysql_upgrade; then
-      echo "Data upgrade finished."
-    else
-      echo "Data is in 5.6 format. Ignore."
-    fi
-
-  fi
+  brew_install_or_upgrade mysql@5.6
+  brew link mysql@5.6 --force  >> /tmp/laptop.log 2>&1
+  brew services start mysql@5.6
 
   echo -e "Relax default setting of MySQL56:\n"
   cat > /usr/local/etc/my.cnf.d/relax.cnf <<- EOM
@@ -448,9 +368,6 @@ fancy_echo "Installing MySQL5.6 ..."
 sql-mode="NO_ENGINE_SUBSTITUTION"
 EOM
   cat /usr/local/etc/my.cnf.d/relax.cnf
-
-  brew pin mysql56 >> /tmp/laptop.log 2>&1
-
 fi
 ### end mac-components/mysql
 
