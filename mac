@@ -43,7 +43,7 @@ fancy_para() {
 brew_install_or_upgrade() {
   if brew_is_installed "$1"; then
     if brew_is_upgradable "$1"; then
-      echo "$1 is installed. Upgrada..."
+      echo "$1 is installed. Upgrading..."
       brew upgrade $1
     fi
     #fancy_echo "$1 is installed. Ignore..."
@@ -328,11 +328,7 @@ fi
 if ( echo "mac-components/hipchat" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing Hipchat..."
   if [ ! -d "/Applications/HipChat.app" ]; then
-    wget https://www.hipchat.com/downloads/latest/mac -O /tmp/Hipchat.app.zip
-    echo "Enter your password to install HipChat into /Applications "
-    sudo unzip -fo /tmp/HipChat.app.zip -d /Applications/
-    fancy_echo "*** Finish. Remove temporary files"
-    rm -f /tmp/HipChat.app.zip
+    brew cask install hipchat
     fancy_echo "*** Done"
   else
     fancy_echo "*** Installed. Ignore"
