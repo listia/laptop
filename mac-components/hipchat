@@ -1,10 +1,6 @@
 fancy_echo "Installing Hipchat..."
   if [ ! -d "/Applications/HipChat.app" ]; then
-    wget https://www.hipchat.com/downloads/latest/mac -O /tmp/Hipchat.app.zip
-    echo "Enter your password to install HipChat into /Applications "
-    sudo unzip -fo /tmp/HipChat.app.zip -d /Applications/
-    fancy_echo "*** Finish. Remove temporary files"
-    rm -f /tmp/HipChat.app.zip
+    brew cask install hipchat
     fancy_echo "*** Done"
   else
     fancy_echo "*** Installed. Ignore"

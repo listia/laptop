@@ -1,7 +1,7 @@
 brew_install_or_upgrade() {
   if brew_is_installed "$1"; then
     if brew_is_upgradable "$1"; then
-      echo "$1 is installed. Upgrada..."
+      echo "$1 is installed. Upgrading..."
       brew upgrade $1
     fi
     #fancy_echo "$1 is installed. Ignore..."
