@@ -349,10 +349,8 @@ fi
 ### end mac-components/imageoptim
 
 if ( echo "mac-components/mysql" | grep -q "$PACKAGE" ); then
-
 fancy_echo "Installing MySQL 5.7 ..."
   fancy_echo "Updating brew formula..."
-  brew update >> /tmp/laptop.log 2>&1
 
   brew_install_or_upgrade mysql
   brew link mysql --force  >> /tmp/laptop.log 2>&1
@@ -433,6 +431,18 @@ fancy_echo "Starting nginx service with sudo to bind on port 443..."
 
 fi
 ### end mac-components/nginx
+
+if ( echo "mac-components/pumadev" | grep -q "$PACKAGE" ); then
+fancy_echo "Installing Pumadev ..."
+  if [ ! -f /usr/local/bin/puma-dev ]; then
+    brew install puma/puma/puma-dev
+    sudo puma-dev -setup
+    puma-dev -install
+  else
+    fancy_echo "Ignore."
+  fi
+fi
+### end mac-components/pumadev
 
 if [[ ! "$PACKAGE" ]]; then
 fancy_echo "Re starting MySQL ..."
