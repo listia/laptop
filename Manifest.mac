@@ -20,5 +20,6 @@ mac-components/imageoptim
 mac-components/mysql
 mac-components/sphinx
 mac-components/nginx
+mac-components/pumadev
 mac-components/start-services
 common-components/personal-additions

@@ -1,0 +1,8 @@
+fancy_echo "Installing Pumadev ..."
+  if [ ! -f /usr/local/bin/puma-dev ]; then
+    brew install puma/puma/puma-dev
+    sudo puma-dev -setup
+    puma-dev -install
+  else
+    fancy_echo "Ignore."
+  fi
