@@ -280,7 +280,7 @@ fancy_para
 ### end mac-components/compiler-and-libraries
 
 if ( echo "common-components/ruby-environment" | grep -q "$PACKAGE" ); then
-ruby_version="ruby-2.0.0-p645"
+ruby_version="ruby-2.2.6"
 
 fancy_echo "Installing Ruby $ruby_version ..."
   if [ -n "$(rvm list | grep "$ruby_version")" ]; then
