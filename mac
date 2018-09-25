@@ -309,22 +309,6 @@ fancy_echo "Configuring Bundler for faster, parallel gem installation ..."
 fi
 ### end mac-components/bundler
 
-if ( echo "mac-components/anvil" | grep -q "$PACKAGE" ); then
-fancy_echo "Installing Anvil..."
-  if [ ! -d "/Applications/Anvil.app" ]; then
-    wget http://sparkler.herokuapp.com/apps/3/download -O /tmp/Anvil.app.zip
-
-    #if [ "$(md5 -r /tmp/Anvil.app.zip)" == "d41d8cd98f00b204e9800998ecf8427e" ]; then
-      echo "Enter your password to install Anvil into /Applications "
-      sudo unzip -o /tmp/Anvil.app.zip -d /Applications/
-      #rm -f /tmp/Anvil.app.zip
-    #fi
-  else
-    fancy_echo "Ignore"
-  fi
-fi
-### end mac-components/anvil
-
 if ( echo "mac-components/hipchat" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing Hipchat..."
   if [ ! -d "/Applications/HipChat.app" ]; then
