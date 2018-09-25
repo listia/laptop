@@ -309,17 +309,6 @@ fancy_echo "Configuring Bundler for faster, parallel gem installation ..."
 fi
 ### end mac-components/bundler
 
-if ( echo "mac-components/hipchat" | grep -q "$PACKAGE" ); then
-fancy_echo "Installing Hipchat..."
-  if [ ! -d "/Applications/HipChat.app" ]; then
-    brew cask install hipchat
-    fancy_echo "*** Done"
-  else
-    fancy_echo "*** Installed. Ignore"
-  fi
-fi
-### end mac-components/hipchat
-
 if ( echo "mac-components/imageoptim" | grep -q "$PACKAGE" ); then
 fancy_echo "Installing ImageOptim..."
   if [ ! -d "/Applications/ImageOptim.app" ]; then
