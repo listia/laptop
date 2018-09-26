@@ -1,7 +1,7 @@
 fancy_echo "Installing MySQL 5.7 ..."
   fancy_echo "Updating brew formula..."
 
-  brew_install_or_upgrade mysql
+  brew_install_or_upgrade mysql@5.7
   brew link mysql --force  >> /tmp/laptop.log 2>&1
   brew services start mysql
 
